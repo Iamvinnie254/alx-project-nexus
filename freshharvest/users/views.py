@@ -1,11 +1,21 @@
 from django.shortcuts import render
-from rest_framework import viewsets, status, permissions
+from rest_framework import viewsets, status, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import User
 from .serializers import UserSerializer, RegisterSerializer
+
+
+
+class UserRegisterView(generics.CreateAPIView):
+    """
+    API endpoint for user registration.
+    """
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -15,8 +25,8 @@ class UserViewSet(viewsets.ModelViewSet):
     
     def get_permissions(self):
         if self.action in ['create', 'list']:
-            permission_classes = [permissions.AllowAny]
-        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
+           permission_classes = [permissions.AllowAny]
+        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy', 'me', 'profile']:
             permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [permissions.IsAdminUser]
