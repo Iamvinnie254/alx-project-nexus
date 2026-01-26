@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, generics, permissions
 from .models import User
 from django.contrib.auth.password_validation import validate_password
 
@@ -6,7 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'user_type', 'phone', 
+            'id', 'username', 'email', 'user_type', 'phone_number',
             'location', 'is_verified', 'is_active', 'date_joined'
         ]
         read_only_fields = ['id', 'date_joined', 'is_verified']
@@ -17,7 +17,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password_confirm', 'user_type', 'phone', 'location']
+        fields = ['username', 'email', 'password', 'password_confirm', 'user_type', 'phone_number', 'location']
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
@@ -29,6 +29,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+
+class UserRegisterView(generics.CreateAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
