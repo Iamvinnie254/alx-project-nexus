@@ -1,4 +1,4 @@
-// src/components/Navbar.jsx - MOBILE WIDTH FIXED
+// src/components/Navbar.jsx - FULLY UPDATED
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -18,70 +18,102 @@ const Navbar = () => {
       )}
 
       {/* FIXED NAVBAR - CONTAINER WIDTH */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl shadow-2xl border-b border-emerald-100 lg:border-b-0">
-        {/* Desktop */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl shadow-2xl border-b border-emerald-100">
+        {/* DESKTOP NAVBAR */}
         <div className="hidden lg:block max-w-7xl mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
+            {/* Logo */}
             <Link
               to="/"
-              className="text-3xl font-bold bg-linear-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent"
+              className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent hover:scale-105 transition-all"
             >
               FreshHarvest
             </Link>
-            {/* Desktop links... */}
-            <div className="flex items-center space-x-6">
+
+            {/* Desktop Navigation */}
+            <div className="flex items-center space-x-8">
               <Link
                 to="/"
-                className="text-gray-700 hover:text-emerald-600 font-medium"
+                className="text-lg font-medium text-gray-700 hover:text-emerald-600 px-4 py-2 rounded-xl hover:bg-emerald-50/80 transition-all"
               >
-                Home
+                🏠 Home
               </Link>
               <Link
                 to="/products"
-                className="text-gray-700 hover:text-emerald-600 font-medium"
+                className="text-lg font-medium text-gray-700 hover:text-emerald-600 px-4 py-2 rounded-xl hover:bg-emerald-50/80 transition-all"
               >
-                Products
+                🥬 Products
               </Link>
-              <Link to="/cart" className="relative p-2">
-                🛒
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              <Link
+                to="/cart"
+                className="relative p-3 hover:bg-emerald-50/80 rounded-2xl transition-all group"
+              >
+                <span className="text-2xl">🛒</span>
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg">
                   3
                 </span>
               </Link>
-              {user ? (
-                <button
-                  onClick={logout}
-                  className="text-red-600 hover:text-red-800"
-                >
-                  Logout
-                </button>
-              ) : (
-                <Link
-                  to="/login"
-                  className="bg-emerald-600 text-white px-6 py-2 rounded-xl"
-                >
-                  Login
-                </Link>
-              )}
+
+              {/* AUTH SECTION - ENHANCED */}
+              <div className="flex items-center space-x-4 ml-4">
+                {user ? (
+                  <>
+                    <div className="flex items-center space-x-2 bg-emerald-50/50 px-4 py-2 rounded-2xl backdrop-blur-sm border border-emerald-100/50">
+                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl flex items-center justify-center text-white text-sm font-bold">
+                        {user.username?.charAt(0)?.toUpperCase()}
+                      </div>
+                      <span className="text-sm font-semibold text-gray-800 max-w-24 truncate">
+                        {user.username}
+                      </span>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-bold ${
+                          user.user_type === "farmer"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-emerald-100 text-emerald-800"
+                        }`}
+                      >
+                        {user.user_type}
+                      </span>
+                    </div>
+                    <button
+                      onClick={logout}
+                      className="text-red-600 hover:text-red-700 font-semibold px-6 py-3 rounded-xl hover:bg-red-50/50 transition-all shadow-sm hover:shadow-md"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-8 py-3 rounded-2xl font-semibold shadow-lg hover:shadow-xl hover:from-emerald-700 transition-all duration-300"
+                  >
+                    Sign In
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* MOBILE - FULL WIDTH CONTAINER */}
-        <div className="lg:hidden w-full px-4 py-4 max-w-full">
-          <div className="flex items-center justify-between w-full">
+        {/* MOBILE NAVBAR */}
+        <div className="lg:hidden w-full px-4 py-4">
+          <div className="flex items-center justify-between w-full max-w-full">
             <Link
               to="/"
-              className="text-2xl font-bold bg-linear-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent"
+              className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent"
             >
               FreshHarvest
             </Link>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100"
+              className={`p-3 rounded-2xl shadow-md transition-all duration-300 ${
+                isOpen
+                  ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-red-200"
+                  : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 shadow-emerald-200 hover:shadow-emerald-300"
+              }`}
             >
               <svg
-                className={`w-6 h-6 ${isOpen ? "rotate-180" : ""}`}
+                className={`w-6 h-6 transition-transform duration-300 ${isOpen ? "rotate-180 scale-110" : ""}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -89,7 +121,7 @@ const Navbar = () => {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   d={
                     isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
                   }
@@ -102,58 +134,102 @@ const Navbar = () => {
         {/* MOBILE MENU - FULL WIDTH NO OVERFLOW */}
         <div
           className={`
-          lg:hidden fixed top-16 left-0 right-0 z-40
-          bg-white/98 backdrop-blur-2xl shadow-2xl border-b border-emerald-200
-          overflow-hidden transition-all duration-500 ease-out
-          ${isOpen ? "max-h-[70vh] opacity-100 py-6 px-4" : "max-h-0 opacity-0 py-0"}
-          w-full max-w-full
-        `}
+            lg:hidden fixed top-16 left-0 right-0 z-40
+            bg-white/98 backdrop-blur-2xl shadow-2xl border-b-4 border-emerald-200
+            overflow-hidden transition-all duration-500 ease-out
+            ${isOpen ? "max-h-[70vh] opacity-100 py-6 px-4" : "max-h-0 opacity-0 py-0"}
+            w-full max-w-full
+          `}
         >
           <div className="w-full space-y-4">
-            {/* Menu items - responsive text */}
+            {/* Home */}
             <Link
               to="/"
-              className="block py-3 px-4 text-lg font-semibold text-gray-800 hover:bg-emerald-50 rounded-xl w-full"
+              className="block py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200"
               onClick={() => setIsOpen(false)}
             >
               🏠 Home
             </Link>
+
+            {/* Products */}
             <Link
               to="/products"
-              className="block py-3 px-4 text-lg font-semibold text-gray-800 hover:bg-emerald-50 rounded-xl w-full"
+              className="block py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200"
               onClick={() => setIsOpen(false)}
             >
               🥬 Products
             </Link>
+
+            {/* Cart */}
             <Link
               to="/cart"
-              className="py-3 px-4 text-lg font-semibold text-gray-800 hover:bg-emerald-50 rounded-xl w-full flex items-center"
+              className="py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200 flex items-center"
               onClick={() => setIsOpen(false)}
             >
-              🛒 Cart{" "}
-              <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+              🛒 Cart
+              <span className="ml-auto bg-red-500 text-white text-sm rounded-full h-8 w-8 flex items-center justify-center font-bold shadow-lg">
                 3
               </span>
             </Link>
-            {user ? (
-              <button
-                className="w-full py-3 px-4 text-lg text-red-600 hover:bg-red-50 rounded-xl"
-                onClick={() => {
-                  logout();
-                  setIsOpen(false);
-                }}
-              >
-                🚪 Logout
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className="w-full block text-center bg-emerald-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg"
-                onClick={() => setIsOpen(false)}
-              >
-                👋 Login
-              </Link>
-            )}
+
+            {/* My Orders */}
+            <Link
+              to="/orders"
+              className="block py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200"
+              onClick={() => setIsOpen(false)}
+            >
+              📦 My Orders
+            </Link>
+
+            {/* AUTH SECTION - MOBILE */}
+            <div className="pt-4 border-t border-gray-200">
+              {user ? (
+                <>
+                  {/* User Profile Card */}
+                  <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-3xl border-2 border-emerald-200/50 shadow-lg mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-emerald-800 mb-1">
+                          Welcome back!
+                        </h3>
+                        <p className="text-2xl font-black bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent">
+                          {user.username}
+                        </p>
+                      </div>
+                      <div
+                        className={`px-4 py-2 rounded-2xl text-sm font-bold ${
+                          user.user_type === "farmer"
+                            ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-200"
+                            : "bg-emerald-100 text-emerald-800 border-2 border-emerald-200"
+                        }`}
+                      >
+                        {user.user_type?.charAt(0).toUpperCase() +
+                          user.user_type?.slice(1)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Logout Button */}
+                  <button
+                    className="w-full py-5 px-6 text-xl font-bold text-red-600 hover:text-red-700 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 rounded-3xl shadow-lg hover:shadow-xl border-2 border-red-200/50 transition-all duration-300"
+                    onClick={() => {
+                      logout();
+                      setIsOpen(false);
+                    }}
+                  >
+                    🚪 Logout @{user.username}
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  className="w-full block text-center bg-gradient-to-r from-emerald-600 to-green-600 text-white py-6 px-8 rounded-3xl font-black text-xl shadow-2xl hover:shadow-3xl hover:from-emerald-700 transition-all duration-300"
+                  onClick={() => setIsOpen(false)}
+                >
+                  👋 Get Started - Sign In
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </nav>
