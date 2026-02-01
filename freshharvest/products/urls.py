@@ -4,7 +4,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'categories', views.CategoryViewSet)
-router.register(r'', views.ProductViewSet)  # /api/products/ for products
+router.register(r'', views.ProductViewSet) 
 
 urlpatterns = [
     path('', include(router.urls)),

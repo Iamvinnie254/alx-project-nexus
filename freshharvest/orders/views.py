@@ -29,10 +29,8 @@ class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     
     def get_queryset(self):
-        # ✅ Only user's cart items
-        return CartItem.objects.filter(user=self.request.user)
+       return CartItem.objects.filter(user=self.request.user)
     
     def perform_create(self, serializer):
-        # ✅ Auto-set user on create
         serializer.save(user=self.request.user)
 
