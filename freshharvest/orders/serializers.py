@@ -81,7 +81,6 @@ class CartItemSerializer(serializers.ModelSerializer):
         return float(obj.product.price * obj.quantity)
     
     def create(self, validated_data):
-        # 🔥 ULTIMATE DUPLICATE HANDLING
         user = self.context['request'].user
         product = validated_data['product']
         quantity = validated_data.get('quantity', 1)

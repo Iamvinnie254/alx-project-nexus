@@ -45,7 +45,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     
 
-    ################################################################################
+####
+####
     from .serializers import ProductSerializer
 from .models import Product
 
@@ -63,7 +64,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         return [permissions.IsAuthenticated()]
     
     def filter_queryset(self, queryset):
-        # EVALUATION: Complex filtering support
         qs = super().filter_queryset(queryset)
         harvest_fresh = self.request.query_params.get('harvest_fresh')
         if harvest_fresh == 'true':
