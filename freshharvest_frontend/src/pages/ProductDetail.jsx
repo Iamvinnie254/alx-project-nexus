@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeftIcon, StarIcon } from "@heroicons/react/24/outline";
+import { useCart } from "../contexts/CartContext";
 
 const API_BASE = "http://127.0.0.1:8000/api";
 
@@ -12,6 +13,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [loadingCart, setLoadingCart] = useState(false);
+ // const { addToCart } = useCart();
 
   useEffect(() => {
     fetchProduct();
@@ -31,6 +33,7 @@ const ProductDetail = () => {
 
   const addToCart = async () => {
     if (!localStorage.getItem("token")) {
+      // ← Simple check
       alert("Please login to add to cart");
       navigate("/login");
       return;
@@ -38,24 +41,11 @@ const ProductDetail = () => {
 
     setLoadingCart(true);
     try {
-      await axios.post(
-        `${API_BASE}/orders/cart/items/`,
-        { product: id, quantity },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      // Use CartContext instead of direct API
+      await addToCart(product, quantity); // ← From useCart()
       alert("Added to cart! 🛒");
     } catch (error) {
-      if (error.response?.status === 401) {
-        alert("Please login to continue");
-        navigate("/login");
-      } else {
-        alert("Error adding to cart");
-      }
+      alert("Error adding to cart");
     } finally {
       setLoadingCart(false);
     }
@@ -111,7 +101,7 @@ const ProductDetail = () => {
           {/* Product Image */}
           <div className="lg:order-1">
             <div className="bg-white rounded-3xl shadow-2xl p-4 lg:p-8 sticky top-32 lg:top-40">
-              <div className="aspect-square bg-gradient-to-br from-green-100 to-emerald-200 rounded-2xl overflow-hidden flex items-center justify-center mb-6 lg:mb-8">
+              <div className="aspect-square bg-linear-to-br from-green-100 to-emerald-200 rounded-2xl overflow-hidden flex items-center justify-center mb-6 lg:mb-8">
                 {product.image ? (
                   <img
                     src={product.image}
@@ -129,7 +119,7 @@ const ProductDetail = () => {
                   (img, idx) => (
                     <div
                       key={idx}
-                      className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all"
+                      className="w-20 h-20 shrink-0 bg-gray-100 rounded-xl overflow-hidden cursor-pointer hover:shadow-md transition-all"
                     >
                       <img
                         src={img}
@@ -173,7 +163,7 @@ const ProductDetail = () => {
               </div>
 
               {/* Price + Availability */}
-              <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-2xl mb-8 border border-emerald-100">
+              <div className="bg-linear-to-r from-emerald-50 to-green-50 p-6 rounded-2xl mb-8 border border-emerald-100">
                 <div className="flex items-baseline mb-4">
                   <span className="text-4xl lg:text-5xl font-black text-emerald-600">
                     KSh {parseFloat(product.price || 0).toLocaleString()}
@@ -244,7 +234,7 @@ const ProductDetail = () => {
                 disabled={!product.is_available || loadingCart}
                 className={`w-full py-5 px-8 rounded-3xl font-bold text-xl shadow-2xl transition-all duration-300 flex items-center justify-center ${
                   product.is_available
-                    ? "bg-gradient-to-r from-emerald-600 to-green-600 text-white hover:from-emerald-700 hover:shadow-3xl hover:-translate-y-1"
+                    ? "bg-linear-to-r from-emerald-600 to-green-600 text-white hover:from-emerald-700 hover:shadow-3xl hover:-translate-y-1"
                     : "bg-gray-200 text-gray-500 cursor-not-allowed"
                 }`}
               >

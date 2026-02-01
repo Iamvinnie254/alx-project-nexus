@@ -1,11 +1,16 @@
-// src/components/Navbar.jsx - FULLY UPDATED
+// src/components/Navbar.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useCart } from "../contexts/CartContext"; // ✅ Your existing context path
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { cartItems, cartCount } = useCart(); // ✅ Using YOUR CartContext API
   const [isOpen, setIsOpen] = useState(false);
+
+  // ✅ Use cartItems.length as fallback if cartCount not available
+  const cartItemCount = cartCount || cartItems?.length || 0;
 
   return (
     <>
@@ -17,7 +22,7 @@ const Navbar = () => {
         />
       )}
 
-      {/* FIXED NAVBAR - CONTAINER WIDTH */}
+      {/* FIXED NAVBAR */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl shadow-2xl border-b border-emerald-100">
         {/* DESKTOP NAVBAR */}
         <div className="hidden lg:block max-w-7xl mx-auto px-6 py-5">
@@ -44,17 +49,28 @@ const Navbar = () => {
               >
                 🥬 Products
               </Link>
+
+              {/* CART WITH LIVE COUNT */}
               <Link
                 to="/cart"
                 className="relative p-3 hover:bg-emerald-50/80 rounded-2xl transition-all group"
               >
                 <span className="text-2xl">🛒</span>
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg">
-                  3
-                </span>
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold shadow-lg">
+                    {cartItemCount}
+                  </span>
+                )}
               </Link>
 
-              {/* AUTH SECTION - ENHANCED */}
+              <Link
+                to="/orders"
+                className="text-lg font-medium text-gray-700 hover:text-emerald-600 px-4 py-2 rounded-xl hover:bg-emerald-50/80 transition-all"
+              >
+                📋 Orders
+              </Link>
+
+              {/* AUTH SECTION */}
               <div className="flex items-center space-x-4 ml-4">
                 {user ? (
                   <>
@@ -95,7 +111,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* MOBILE NAVBAR */}
+        {/* MOBILE NAVBAR - SAME STRUCTURE, SIMPLIFIED */}
         <div className="lg:hidden w-full px-4 py-4">
           <div className="flex items-center justify-between w-full max-w-full">
             <Link
@@ -131,7 +147,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* MOBILE MENU - FULL WIDTH NO OVERFLOW */}
+        {/* MOBILE MENU - UPDATED CART COUNT */}
         <div
           className={`
             lg:hidden fixed top-16 left-0 right-0 z-40
@@ -142,7 +158,6 @@ const Navbar = () => {
           `}
         >
           <div className="w-full space-y-4">
-            {/* Home */}
             <Link
               to="/"
               className="block py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200"
@@ -150,8 +165,6 @@ const Navbar = () => {
             >
               🏠 Home
             </Link>
-
-            {/* Products */}
             <Link
               to="/products"
               className="block py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200"
@@ -159,57 +172,51 @@ const Navbar = () => {
             >
               🥬 Products
             </Link>
-
-            {/* Cart */}
             <Link
               to="/cart"
-              className="py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200 flex items-center"
+              className="py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200 flex items-center justify-between"
               onClick={() => setIsOpen(false)}
             >
               🛒 Cart
-              <span className="ml-auto bg-red-500 text-white text-sm rounded-full h-8 w-8 flex items-center justify-center font-bold shadow-lg">
-                3
-              </span>
+              {cartItemCount > 0 && (
+                <span className="bg-red-500 text-white text-sm rounded-full h-8 w-8 flex items-center justify-center font-bold shadow-lg ml-4">
+                  {cartItemCount}
+                </span>
+              )}
             </Link>
-
-            {/* My Orders */}
             <Link
               to="/orders"
               className="block py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200"
               onClick={() => setIsOpen(false)}
             >
-              📦 My Orders
+              📋 Orders
             </Link>
 
-            {/* AUTH SECTION - MOBILE */}
+            {/* AUTH SECTION MOBILE - SAME AS BEFORE */}
             <div className="pt-4 border-t border-gray-200">
               {user ? (
                 <>
-                  {/* User Profile Card */}
                   <div className="bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-3xl border-2 border-emerald-200/50 shadow-lg mb-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
                         <h3 className="text-xl font-bold text-emerald-800 mb-1">
-                          Welcome back!
+                          Welcome!
                         </h3>
                         <p className="text-2xl font-black bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent">
                           {user.username}
                         </p>
                       </div>
-                      <div
+                      <span
                         className={`px-4 py-2 rounded-2xl text-sm font-bold ${
                           user.user_type === "farmer"
                             ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-200"
                             : "bg-emerald-100 text-emerald-800 border-2 border-emerald-200"
                         }`}
                       >
-                        {user.user_type?.charAt(0).toUpperCase() +
-                          user.user_type?.slice(1)}
-                      </div>
+                        {user.user_type}
+                      </span>
                     </div>
                   </div>
-
-                  {/* Logout Button */}
                   <button
                     className="w-full py-5 px-6 text-xl font-bold text-red-600 hover:text-red-700 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 rounded-3xl shadow-lg hover:shadow-xl border-2 border-red-200/50 transition-all duration-300"
                     onClick={() => {
@@ -217,7 +224,7 @@ const Navbar = () => {
                       setIsOpen(false);
                     }}
                   >
-                    🚪 Logout @{user.username}
+                    🚪 Logout
                   </button>
                 </>
               ) : (
@@ -226,7 +233,7 @@ const Navbar = () => {
                   className="w-full block text-center bg-gradient-to-r from-emerald-600 to-green-600 text-white py-6 px-8 rounded-3xl font-black text-xl shadow-2xl hover:shadow-3xl hover:from-emerald-700 transition-all duration-300"
                   onClick={() => setIsOpen(false)}
                 >
-                  👋 Get Started - Sign In
+                  👋 Sign In
                 </Link>
               )}
             </div>
@@ -234,7 +241,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Spacer for fixed navbar */}
+      {/* Spacer */}
       <div className="h-20 lg:h-24"></div>
     </>
   );

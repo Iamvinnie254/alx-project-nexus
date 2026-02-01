@@ -1,52 +1,38 @@
-from django.shortcuts import render
-from rest_framework import viewsets, status, permissions
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.filters import SearchFilter, OrderingFilter
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated
 from .models import Order, OrderItem, CartItem
-from .serializers import OrderSerializer, OrderItemSerializer, CartItemSerializer
+from .serializers import CheckoutSerializer, OrderSerializer, CartItemSerializer
+from products.models import Product
 
-class CartItemViewSet(viewsets.ModelViewSet):
-    serializer_class = CartItemSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['user', 'product']
-    search_fields = ['product__name']
-    
-    def get_queryset(self):
-        return CartItem.objects.filter(user=self.request.user).select_related('product')
-    
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-    
-    def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            return [permissions.IsAuthenticated()]
-        return [permissions.IsAuthenticated()]
+class CheckoutViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['post'], url_path='checkout')
+    def checkout(self, request):
+        serializer = CheckoutSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            order = serializer.save()
+            return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrderSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['status']
-    ordering_fields = ['created_at']
-    
-    def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).select_related('user').prefetch_related('items__product')
-    
-    @action(detail=False, methods=['get'])
-    def pending(self, request):
-        """Consumer's pending orders"""
-        orders = self.get_queryset().filter(status='pending')
-        serializer = self.get_serializer(orders, many=True)
-        return Response(serializer.data)
+    permission_classes = [IsAuthenticated]
 
-class OrderItemViewSet(viewsets.ModelViewSet):
-    serializer_class = OrderItemSerializer
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).select_related('user')
+
+class CartItemViewSet(viewsets.ModelViewSet):
+    serializer_class = CartItemSerializer
+    queryset = CartItem.objects.all()
     
     def get_queryset(self):
-        return OrderItem.objects.select_related('order', 'product')
+        # ✅ Only user's cart items
+        return CartItem.objects.filter(user=self.request.user)
     
-    def get_permissions(self):
-        if self.action == 'list':
-            return [permissions.IsAuthenticated()]
-        return [permissions.IsAdminUser()]
+    def perform_create(self, serializer):
+        # ✅ Auto-set user on create
+        serializer.save(user=self.request.user)
+

@@ -1,38 +1,26 @@
 from django.contrib import admin
 from .models import Order, OrderItem, CartItem
 
+# ✅ DEFINE INLINE FIRST
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    fields = ['product', 'quantity', 'price_at_purchase']
-    readonly_fields = ['subtotal']
     extra = 0
-    
-    def subtotal(self, obj):
-        return f"KSh {obj.price_at_purchase * obj.quantity:.2f}"
-    subtotal.short_description = 'Subtotal'
+    readonly_fields = ['price_at_purchase']
 
+# ✅ THEN REGISTER MODELS
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'consumer_link', 'total_amount', 'status', 'delivery_address_snip', 'created_at']
-    list_filter = ['status', 'created_at']
-    inlines = [OrderItemInline]
-    readonly_fields = ['total_amount']
-    
-    def consumer_link(self, obj):
-        return obj.user.username
-    consumer_link.short_description = 'Consumer'
-    
-    def delivery_address_snip(self, obj):
-        return obj.delivery_address[:30] + '...'
-    delivery_address_snip.short_description = 'Address'
+    list_display = ['id', 'user', 'total_amount', 'status', 'delivery_address', 'created_at']
+    list_filter = ['status', 'created_at', 'user']
+    readonly_fields = ['created_at']
+    inlines = [OrderItemInline]  # ✅ NOW OrderItemInline exists!
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'product', 'quantity', 'price_at_purchase']
+    list_filter = ['order__status']
 
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
-    list_display = ['user', 'product', 'quantity', 'subtotal', 'updated_at']
-    list_filter = ['user', 'updated_at']
-    
-    def subtotal(self, obj):
-        return f"KSh {obj.product.price * obj.quantity:.2f}"
-    subtotal.short_description = 'Subtotal'
-
-admin.site.register(OrderItem)
+    list_display = ['user', 'product', 'quantity', 'updated_at']
+    list_filter = ['user']
