@@ -1,4 +1,3 @@
-// src/pages/Home.jsx - FIXED TYPOs
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ProductCard from "../components/ProductCard";
@@ -96,7 +95,7 @@ const Home = () => {
                 >
                   <div className="bg-linear-to-br from-green-100 to-emerald-200 p-6 sm:p-8 rounded-2xl hover:shadow-2xl h-full flex flex-col items-center justify-center text-center">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 text-2xl sm:text-3xl">
-                      🥬
+                      {cat.name.charAt(0).toLowerCase()}
                     </div>
                     <h3 className="text-lg sm:text-2xl font-semibold text-gray-800">
                       {cat.name}

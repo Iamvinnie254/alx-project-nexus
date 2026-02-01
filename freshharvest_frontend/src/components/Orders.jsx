@@ -1,4 +1,3 @@
-// src/components/Orders.jsx - PERSISTENT AUTH ✅
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -15,10 +14,9 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const { api, token, user, isAuthenticated } = useAuth(); // ✅ Use isAuthenticated
+  const { api, token, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // 🔥 STABLE fetchOrders - Won't re-run unnecessarily
   const fetchOrders = useCallback(async () => {
     if (!token || !isAuthenticated) {
       setOrders([]);
@@ -33,7 +31,6 @@ const Orders = () => {
     } catch (error) {
       console.error("Orders fetch failed:", error);
       if (error.response?.status === 401) {
-        // Token invalid - AuthContext will handle redirect
         setOrders([]);
       }
     } finally {
@@ -41,12 +38,10 @@ const Orders = () => {
     }
   }, [token, isAuthenticated, api]);
 
-  // 🔥 PERFECT useEffect - Only runs when needed
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
 
-  // 🔥 REFETCH on focus (tab refresh)
   useEffect(() => {
     const handleFocus = () => fetchOrders();
     window.addEventListener("focus", handleFocus);
@@ -73,7 +68,6 @@ const Orders = () => {
     return colors[status?.toLowerCase()] || "bg-gray-100 text-gray-800";
   };
 
-  // 🔥 EARLY RETURN - NO API CALLS if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="text-center py-20">
@@ -84,7 +78,7 @@ const Orders = () => {
         <p className="text-xl text-gray-600 mb-8">Your session has expired</p>
         <button
           onClick={() => navigate("/login")}
-          className="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-10 py-4 rounded-3xl text-xl font-bold hover:from-emerald-700 shadow-xl hover:shadow-2xl transition-all"
+          className="bg-linear-to-r from-emerald-600 to-green-600 text-white px-10 py-4 rounded-3xl text-xl font-bold hover:from-emerald-700 shadow-xl hover:shadow-2xl transition-all"
         >
           Login to Continue →
         </button>
@@ -95,7 +89,7 @@ const Orders = () => {
   return (
     <div className="max-w-6xl mx-auto p-6 lg:p-12">
       <div className="text-center mb-12">
-        <h1 className="text-5xl font-black bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-4">
+        <h1 className="text-5xl font-black bg-linear-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-4">
           Your Orders
         </h1>
         <p className="text-2xl text-gray-600">
@@ -119,7 +113,7 @@ const Orders = () => {
           </p>
           <button
             onClick={() => navigate("/products")}
-            className="bg-gradient-to-r from-emerald-600 to-green-600 text-white px-10 py-4 rounded-3xl text-xl font-bold hover:from-emerald-700 shadow-xl hover:shadow-2xl transition-all"
+            className="bg-linear-to-r from-emerald-600 to-green-600 text-white px-10 py-4 rounded-3xl text-xl font-bold hover:from-emerald-700 shadow-xl hover:shadow-2xl transition-all"
           >
             Start Shopping →
           </button>
@@ -136,7 +130,7 @@ const Orders = () => {
               >
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-green-100 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg group-hover:scale-110 transition-all">
+                    <div className="w-20 h-20 bg-linear-to-br from-emerald-100 to-green-100 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg group-hover:scale-110 transition-all">
                       📦
                     </div>
                     <div>
@@ -216,7 +210,7 @@ const Orders = () => {
                 {/* TRACKING + ITEMS - Your existing code stays the same */}
                 <div className="p-8 border-b">
                   <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                    📊 Order Progress
+                    Order Progress
                   </h3>
                   <div className="flex items-center justify-between mb-8">
                     {["pending", "processing", "shipped", "delivered"].map(
@@ -255,7 +249,7 @@ const Orders = () => {
                             </div>
                             {index < 3 && (
                               <div
-                                className={`flex-1 w-1 bg-gradient-to-t ${
+                                className={`flex-1 w-1 bg-linear-to-t ${
                                   isCompleted
                                     ? "from-emerald-500 to-transparent"
                                     : "from-gray-200 to-transparent"
@@ -270,7 +264,7 @@ const Orders = () => {
                 </div>
 
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold mb-6">🛒 Items Ordered</h3>
+                  <h3 className="text-2xl font-bold mb-6">Items Ordered</h3>
                   <div className="space-y-4">
                     {selectedOrder.order_items?.map((item) => (
                       <div
@@ -278,7 +272,7 @@ const Orders = () => {
                         className="flex gap-6 p-6 bg-gray-50 rounded-2xl"
                       >
                         <div className="w-24 h-24 bg-emerald-100 rounded-xl flex items-center justify-center text-2xl">
-                          🥑
+                          {item.product_name.charAt(0).toLowerCase()}
                         </div>
                         <div className="flex-1">
                           <h4 className="text-xl font-bold mb-2">

@@ -1,4 +1,3 @@
-// src/hooks/useApi.js - Direct backend calls
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 

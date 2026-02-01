@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.jsx - FULLY FIXED
 import React, {
   createContext,
   useContext,
@@ -29,7 +28,6 @@ export const AuthProvider = ({ children }) => {
     }),
   ).current;
 
-  // 🔥 FIXED: Single init on mount
   useEffect(() => {
     const initAuth = async () => {
       const savedToken = localStorage.getItem("token");

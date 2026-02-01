@@ -13,7 +13,6 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [loadingCart, setLoadingCart] = useState(false);
- // const { addToCart } = useCart();
 
   useEffect(() => {
     fetchProduct();
@@ -33,7 +32,6 @@ const ProductDetail = () => {
 
   const addToCart = async () => {
     if (!localStorage.getItem("token")) {
-      // ← Simple check
       alert("Please login to add to cart");
       navigate("/login");
       return;
@@ -41,8 +39,7 @@ const ProductDetail = () => {
 
     setLoadingCart(true);
     try {
-      // Use CartContext instead of direct API
-      await addToCart(product, quantity); // ← From useCart()
+      await addToCart(product, quantity);
       alert("Added to cart! 🛒");
     } catch (error) {
       alert("Error adding to cart");
@@ -66,7 +63,9 @@ const ProductDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center pt-24 bg-gray-50">
         <div className="text-center">
-          <div className="text-6xl mb-6">🥬</div>
+          <div className="text-6xl mb-6">
+            {product.name.charAt(0).toLowerCase()}
+          </div>
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Product not found
           </h2>
@@ -83,7 +82,6 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24">
-      {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
@@ -109,11 +107,13 @@ const ProductDetail = () => {
                     className="w-full h-full object-cover rounded-xl"
                   />
                 ) : (
-                  <span className="text-6xl lg:text-7xl">🥑</span>
+                  <span className="text-6xl lg:text-7xl">
+                    {product.name.charAt(0).toUpperCase()}
+                  </span>
                 )}
               </div>
 
-              {/* Thumbnail Gallery (if multiple images) */}
+              {/* Thumbnail gallery for multiple images*/}
               <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
                 {[product.image || "/api/placeholder/400/400"].map(
                   (img, idx) => (
@@ -136,7 +136,7 @@ const ProductDetail = () => {
           {/* Product Info */}
           <div className="lg:order-2">
             <div className="bg-white rounded-3xl shadow-2xl p-6 lg:p-12 sticky top-32 lg:top-40 lg:max-h-[80vh] overflow-y-auto">
-              {/* Product Title + Farmer */}
+              {/* Product title and farmer name */}
               <div className="mb-6">
                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-3 leading-tight">
                   {product.name}
@@ -162,7 +162,7 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Price + Availability */}
+              {/* Price and availability */}
               <div className="bg-linear-to-r from-emerald-50 to-green-50 p-6 rounded-2xl mb-8 border border-emerald-100">
                 <div className="flex items-baseline mb-4">
                   <span className="text-4xl lg:text-5xl font-black text-emerald-600">
