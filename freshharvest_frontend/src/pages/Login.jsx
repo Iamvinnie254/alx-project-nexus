@@ -32,11 +32,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-100 py-12 px-4 sm:px-6 lg:px-8 pt-24">
+    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-green-50 to-emerald-100 py-12 px-4 sm:px-6 lg:px-8 pt-24">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="mx-auto w-24 h-24 bg-gradient-to-r from-emerald-500 to-green-600 rounded-3xl flex items-center justify-center mb-6 shadow-2xl">
+          <div className="mx-auto w-24 h-24 bg-linear-to-r from-emerald-500 to-green-600 rounded-3xl flex items-center justify-center mb-6 shadow-2xl">
             <svg
               className="w-12 h-12 text-white"
               fill="none"
@@ -51,7 +51,7 @@ const Login = () => {
               />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl font-bold bg-linear-to-r from-emerald-600 to-green-700 bg-clip-text text-transparent mb-4">
             Welcome Back
           </h1>
           <p className="text-xl text-gray-600">
@@ -128,7 +128,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-emerald-600 to-green-600 text-white py-4 px-8 rounded-2xl font-bold text-xl shadow-2xl hover:shadow-3xl hover:from-emerald-700 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
+              className="w-full bg-linear-to-r from-emerald-600 to-green-600 text-white py-4 px-8 rounded-2xl font-bold text-xl shadow-2xl hover:shadow-3xl hover:from-emerald-700 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
             >
               {loading ? (
                 <>
