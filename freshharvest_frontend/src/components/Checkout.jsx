@@ -1,4 +1,3 @@
-// src/components/Checkout.jsx - FIXED 400 ERROR ✅
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -42,19 +41,17 @@ const Checkout = () => {
     setMessage("");
 
     try {
-      // 🔥 EXACT BACKEND FORMAT
       const response = await api.post("/checkout/", {
         delivery_address: deliveryAddress,
         order_notes: orderNotes || "",
         cart_items: cartItems.map((item) => ({
-          product_id: item.product.id || item.product, // Handle both cases
+          product_id: item.product.id || item.product,
           quantity: item.quantity,
         })),
       });
 
       setMessage(`✅ Order placed successfully!`);
 
-      // Clear local cart state and redirect
       setCartItems([]);
       setTimeout(() => navigate("/orders"), 1500);
     } catch (error) {

@@ -14,7 +14,7 @@ const Products = () => {
     search: "",
     price_min: "",
     price_max: "",
-    sort: "price", // price, name, -price (desc), -name
+    sort: "price",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -38,7 +38,7 @@ const Products = () => {
       setLoading(true);
       let url = `${API_BASE}/products/?page=${currentPage}&page_size=12`;
 
-      // Build query params
+      // query params
       if (filters.category) url += `&category=${filters.category}`;
       if (filters.search) url += `&search=${filters.search}`;
       if (filters.price_min) url += `&price_min=${filters.price_min}`;
@@ -129,9 +129,9 @@ const Products = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-375 mx-auto px-4 sm:px-6 lg:px-2 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Filters - Desktop */}
+          {/* Sidebar Filters For Desktop */}
           <div className="lg:w-80 lg:shrink-0 hidden lg:block">
             <div className="bg-white rounded-3xl shadow-xl p-8 sticky top-40 h-fit">
               <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center">

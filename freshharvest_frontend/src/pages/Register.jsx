@@ -1,4 +1,3 @@
-// src/pages/Register.jsx - MATCHES DJANGO FIELDS
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -9,9 +8,9 @@ const Register = () => {
     email: "",
     phone: "",
     password: "",
-    password_confirm: "", // ← REQUIRED BY DJANGO
+    password_confirm: "",
     user_type: "consumer",
-    location: "", // ← REQUIRED BY DJANGO
+    location: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -40,7 +39,7 @@ const Register = () => {
     setErrors({});
     setGeneralError("");
 
-    const result = await register(formData); // ← SEND ALL FIELDS
+    const result = await register(formData);
 
     if (result.success) {
       navigate("/");
@@ -100,7 +99,7 @@ const Register = () => {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-4 text-lg border border-gray-200 rounded-2xl focus:ring-4 focus:ring-emerald-200 focus:border-emerald-500 transition-all shadow-sm"
-                placeholder="jane_consumer"
+                placeholder="Jane Doe"
               />
               {errors.username && (
                 <p className="mt-1 text-sm text-red-600">{errors.username}</p>
@@ -142,7 +141,7 @@ const Register = () => {
               />
             </div>
 
-            {/* Location ← NEW FIELD */}
+            {/* Location */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Location

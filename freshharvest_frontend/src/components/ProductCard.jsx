@@ -1,4 +1,3 @@
-// src/components/ProductCard.jsx - BACKEND DIRECT
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -17,10 +16,10 @@ const ProductCard = ({ product }) => {
     setLoading(true);
     try {
       await api.post("/cart/items/", {
-        product: product.id, // ✅ Backend expects ID
+        product: product.id,
         quantity: 1,
       });
-      alert("✅ Added to cart!");
+      alert("Added to cart!");
     } catch (error) {
       console.error("Add failed:", error.response?.data);
       alert(error.response?.data?.detail || "Failed to add");
@@ -32,7 +31,7 @@ const ProductCard = ({ product }) => {
   return (
     <Link to={`/products/${product.id}`} className="block group">
       <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 p-6 h-full">
-        <div className="w-full h-64 bg-gradient-to-br from-green-100 to-emerald-200 rounded-2xl overflow-hidden mb-6 group-hover:scale-105 transition-transform">
+        <div className="w-full h-64 bg-linear-to-br from-green-100 to-emerald-200 rounded-2xl overflow-hidden mb-6 group-hover:scale-105 transition-transform">
           {product.image ? (
             <img
               src={product.image}
@@ -41,7 +40,7 @@ const ProductCard = ({ product }) => {
             />
           ) : (
             <span className="text-6xl flex items-center justify-center h-full">
-              🥑
+              
             </span>
           )}
         </div>
@@ -74,7 +73,7 @@ const ProductCard = ({ product }) => {
             disabled={!product.is_available || loading || !user}
             className={`w-full py-3 px-6 rounded-2xl font-semibold transition-all mt-2 ${
               product.is_available && user
-                ? "bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:from-emerald-600 hover:to-green-700"
+                ? "bg-linear-to-r from-emerald-500 to-green-600 text-white hover:from-emerald-600 hover:to-green-700"
                 : "bg-gray-200 text-gray-500 cursor-not-allowed"
             }`}
           >
