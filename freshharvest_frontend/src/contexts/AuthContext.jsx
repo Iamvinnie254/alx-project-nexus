@@ -83,10 +83,34 @@ export const AuthProvider = ({ children }) => {
     delete api.defaults.headers.common["Authorization"];
   };
 
+  const register = async (formData) => {
+    try {
+      setLoading(true);
+
+      const { data } = await api.post("/auth/register/", formData);
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message:
+          error.response?.data?.detail ||
+          error.response?.data ||
+          "Registration failed",
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     token,
     login,
+    register,
     logout,
     loading,
     isAuthenticated: !!token && !!user,
