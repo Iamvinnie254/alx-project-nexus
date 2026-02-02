@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'rest_framework.authtoken',
+    'drf_spectacular',
 
 
 ]
@@ -107,6 +108,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # Password validation
@@ -178,4 +180,18 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+# Spectacular setting
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'FreshHarvest Marketplace API',
+    'DESCRIPTION': 'E-commerce API for fresh produce in Nairobi. Complete cart, checkout, and order tracking.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
 }

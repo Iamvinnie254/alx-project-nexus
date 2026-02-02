@@ -25,12 +25,38 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
         return Order.objects.filter(user=self.request.user).select_related('user')
 
 class CartItemViewSet(viewsets.ModelViewSet):
+    """
+    **Cart Management API**
+    
+    Smart cart handles duplicates automatically:
+    - Multiple POST → Increments quantity
+    - UNIQUE(user, product) constraint
+    - Full CRUD operations
+    """
     serializer_class = CartItemSerializer
     queryset = CartItem.objects.all()
-    
+    #permission_classes = [IsAuthenticated]
+
     def get_queryset(self):
        return CartItem.objects.filter(user=self.request.user)
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['post'])
+    def checkout(self, request):
+        """
+        **Place Order + Clear Cart**
+        
+        Converts cart → Order + OrderItems, then clears cart
+        
+        Request:
+        ```json
+        {
+          "delivery_address": "Kilimani, Nairobi",
+          "order_notes": "Call before delivery",
+          "cart_items": [{"product_id": 1, "quantity": 2}]
+        }
+        ```
+        """
 

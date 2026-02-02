@@ -1,44 +1,119 @@
-# ProDev Backend Engineering Program Overview
+# Project Nexus
 
-## Overview of ProDev Backend Engineering Program
+## FreshHarvest Marketplace
 
-Over the last four months, I enrolled in the ProDev Backend Engineering program, a comprehensive hands-on initiative designed to transform beginners into proficient backend developers. Focused on building scalable, production-ready web applications, the program emphasized real-world projects using modern tools and best practices. Through structured modules, live coding sessions, and peer reviews, I gained expertise in designing robust backend systems from scratch.
+**FreshHarvest Marketplace** is a complete e-commerce platform where Nairobi customers can browse fresh produce like avocados, tomatoes, and vegetables, add items to a smart shopping cart that automatically handles quantities without duplicates, checkout with cash-on-delivery using their estate address (like "Kilimani, House 123"), and track orders through a beautiful visual progress system from "Pending" to "Delivered". Built with Django REST Framework backend featuring 2-day persistent JWT authentication and React frontend with mobile-first Tailwind CSS design, it provides a seamless end-to-end shopping experience from product discovery to delivery tracking, perfectly tailored for Nairobi's fresh produce market with full Swagger API documentation.
 
-## Key Technologies Covered
+## FreshHarvest Tech Stack
 
-- **Python**: Core language for scripting, logic implementation, and automation.
-- **Django**: Full-stack web framework for rapid development of secure, maintainable APIs.
-- **REST APIs**: Building stateless, scalable endpoints with Django REST Framework.
-- **GraphQL**: Advanced querying for efficient data fetching and reduced over-fetching.
-- **Docker**: Containerization for consistent environments and easy deployment.
-- **CI/CD**: Automated pipelines for testing, building, and deploying code reliably.
-- **PostgreSQL**: Setting up robust relational databases with advanced features like indexing, migrations, and query optimization.
+## **Complete Technology Overview**
 
-## Important Backend Development Concepts
+| Technology                | Layer        | Responsibility                            |
+| ------------------------- | ------------ | ----------------------------------------- |
+| **Django 6.0.1**          | **Backend**  | Core framework, routing, business logic   |
+| **Django REST Framework** | **Backend**  | RESTful APIs, serializers, authentication |
+| **PostgreSQL**            | **Database** | Data storage (products, orders, users)    |
+| **SimpleJWT**             | **Auth**     | JWT tokens (2-day access, 7-day refresh)  |
+| **React 18**              | **Frontend** | UI components, state management           |
+| **Tailwind CSS**          | **Styling**  | Mobile-first responsive design            |
+| **Vite**                  | **Build**    | Fast frontend bundling & dev server       |
+| **Axios**                 | **HTTP**     | API requests with auth headers            |
+| **React Router**          | **Routing**  | Client-side navigation (/products, /cart) |
 
-- **Database Design**: Normalization, relationships (one-to-many, many-to-many), indexing, and schema migrations to ensure data integrity and performance.
-- **Asynchronous Programming**: Using Celery and Django channels for handling concurrent tasks like background jobs and real-time features.
-- **Caching Strategies**: Redis integration for session management, query caching, and reducing database load.
+## **Role of Each Technology**
 
-## Challenges Faced and Solutions Implemented
+### **Backend Stack**
 
-During the program, I encountered several hurdles that tested my problem-solving skills:
+Django 6.0.1 + DRF  
+├── Handles: API endpoints, validation, auth  
+├── Smart Cart: get_or_create() logic  
+├── Checkout: Order creation + cart clearing  
+└── Orders: Status tracking (Pending→Delivered)
 
-- **Challenge: Slow database queries in high-traffic simulations.**  
-  **Solution**: Implemented database indexing, query optimization with `select_related` and `prefetch_related`, and Redis caching—reducing response times by 70%.
+---
 
-- **Challenge: Managing async tasks in a monolithic Django app.**  
-  **Solution**: Integrated Celery with RabbitMQ for distributed task queues, enabling reliable background processing without blocking the main thread.
+### **Database**
 
-- **Challenge: Containerizing a multi-service app for CI/CD.**  
-  **Solution**: Dockerized Django, PostgreSQL, and Redis services with Docker Compose, then set up GitHub Actions for automated testing and deployment to staging.
+PostgreSQL (freshharvest_db)  
+├── Products: name, price, image, stock  
+├── CartItems: user+product UNIQUE constraint  
+├── Orders: delivery_address, total, status  
+└── Users: Custom user model
 
-These experiences honed my debugging skills and reinforced the importance of iterative testing.
+---
 
-## Best Practices and Personal Takeaways
+### **Frontend Stack**
 
-- **Code Quality**: Follow DRY principles, write comprehensive tests with pytest/Django's TestCase, and use type hints with mypy for maintainable code.
-- **Security**: Always sanitize inputs, use JWT for authentication, and configure CORS properly in production.
-- **Scalability**: Design for horizontal scaling from day one—stateless services, microservices patterns, and monitoring with tools like Sentry.
+React 18 + Tailwind CSS  
+├── React: ProductCard, Cart, Checkout, Orders components  
+├── Tailwind: rounded-3xl shadow-xl mobile-first design  
+├── Context API: Persistent auth state across refreshes  
+└── Vite: Lightning-fast HMR during development
 
-**Key Takeaway**: Backend development is as much about architecture and foresight as coding. This program shifted my mindset from "making it work" to "building it right," preparing me for real-world roles. Excited to apply these skills in collaborative projects!
+---
+
+### **Authentication Flow**
+
+SimpleJWT → 2-day access tokens  
+├── Login: POST /api/auth/login/  
+├── Persist: localStorage.setItem("token")  
+├── Validate: GET /api/users/me/  
+└── Auto-refresh: Page reload → stays logged in
+
+---
+
+### **API Communication**
+
+Axios → All frontend→backend calls  
+├── Authorization: Bearer ${token}  
+├── BaseURL: http://127.0.0.1:8000/api  
+├── Error handling: 401→logout, 400→user feedback  
+└── Loading states: Every API call
+
+---
+
+## **Architecture Summary**
+
+Frontend (React 18)        Backend (Django 6)  
+↓                         ↓  
+Tailwind CSS        ←→    REST Framework APIs  
+↓                         ↓  
+Vite Build                PostgreSQL Database  
+↓  
+Axios Requests     ← JWT Auth → Business Logic
+
+## FreshHarvest Backend API Endpoints - Complete Reference
+
+## **Complete Endpoint Directory**
+
+| Method | Endpoint           | Operation   | Description                            | Auth |
+| ------ | ------------------ | ----------- | -------------------------------------- | ---- |
+| `POST` | `/api/auth/login/` | **Login**   | `{email, password}` → JWT access token | No   |
+| `GET`  | `/api/users/me/`   | **Profile** | Get current user data                  | Yes  |
+
+## **Products Endpoints**
+
+| Method | Endpoint         | Operation | Description                | Auth |
+| ------ | ---------------- | --------- | -------------------------- | ---- |
+| `GET`  | `/api/products/` | **List**  | Get all available products | No   |
+
+## **Cart Endpoints**
+
+| Method   | Endpoint                | Operation         | Description                                             | Auth |
+| -------- | ----------------------- | ----------------- | ------------------------------------------------------- | ---- |
+| `POST`   | `/api/cart/items/`      | **Create/Update** | **Add to cart** - `get_or_create()` increments quantity | Yes  |
+| `GET`    | `/api/cart/items/`      | **List**          | View user's cart items                                  | Yes  |
+| `PATCH`  | `/api/cart/items/{id}/` | **Update**        | Change item quantity (`+/-` buttons)                    | Yes  |
+| `DELETE` | `/api/cart/items/{id}/` | **Delete**        | Remove item from cart                                   | Yes  |
+
+## **Checkout Endpoint**
+
+| Method | Endpoint                    | Operation    | Description                                               | Auth |
+| ------ | --------------------------- | ------------ | --------------------------------------------------------- | ---- |
+| `POST` | `/api/cart/items/checkout/` | **Checkout** | **Place Order** - Creates Order + OrderItems, clears cart | Yes  |
+
+## **Orders Endpoints**
+
+| Method | Endpoint       | Operation | Description                               | Auth |
+| ------ | -------------- | --------- | ----------------------------------------- | ---- |
+| `GET`  | `/api/orders/` | **List**  | User's order history with status tracking | Yes  |
