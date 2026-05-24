@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.db import models
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -56,16 +57,53 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['category', 'is_available', 'farmer']
     search_fields = ['name', 'description']
-    ordering_fields = ['price', 'harvest_date', 'created_at']
+    ordering_fields = ['name', 'price', 'harvest_date', 'created_at']
     
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        queryset = Product.objects.select_related('category', 'farmer').all()
+        if self.action in ['mine', 'update', 'partial_update', 'destroy']:
+            return queryset.filter(farmer=self.request.user)
+        return queryset
+
+    def perform_create(self, serializer):
+        if self.request.user.user_type != 'farmer':
+            raise PermissionDenied('Only farmer accounts can add products.')
+        serializer.save(farmer=self.request.user)
+
+    def perform_update(self, serializer):
+        if self.request.user.user_type != 'farmer':
+            raise PermissionDenied('Only farmer accounts can update products.')
+        serializer.save(farmer=self.request.user)
     
     def filter_queryset(self, queryset):
         qs = super().filter_queryset(queryset)
         harvest_fresh = self.request.query_params.get('harvest_fresh')
         if harvest_fresh == 'true':
             qs = qs.filter(harvest_date__gte=models.functions.TruncDate(models.functions.Now()))
+        price_min = self.request.query_params.get('price_min')
+        price_max = self.request.query_params.get('price_max')
+        if price_min:
+            qs = qs.filter(price__gte=price_min)
+        if price_max:
+            qs = qs.filter(price__lte=price_max)
         return qs
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def mine(self, request):
+        if request.user.user_type != 'farmer':
+            return Response(
+                {'detail': 'Only farmer accounts can view farmer products.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
