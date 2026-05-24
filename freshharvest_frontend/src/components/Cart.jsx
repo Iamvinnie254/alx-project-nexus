@@ -20,7 +20,7 @@ const Cart = () => {
       const { data } = await api.get("/cart/items/");
       const items = data.results || data;
       setCartItems(Array.isArray(items) ? items : []);
-    } catch (error) {
+    } catch {
       setCartItems([]);
     } finally {
       setLoading(false);
@@ -39,6 +39,7 @@ const Cart = () => {
       } else {
         await api.patch(`/cart/items/${itemId}/`, { quantity });
       }
+      window.dispatchEvent(new Event("freshharvest-cart-change"));
       fetchCart();
     } catch (error) {
       console.error("Update failed:", error);
@@ -49,6 +50,7 @@ const Cart = () => {
     if (!token) return;
     try {
       await api.delete(`/cart/items/${itemId}/`);
+      window.dispatchEvent(new Event("freshharvest-cart-change"));
       fetchCart();
     } catch (error) {
       console.error("Remove failed:", error);

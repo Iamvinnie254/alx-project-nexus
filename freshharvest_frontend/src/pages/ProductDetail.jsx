@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeftIcon, StarIcon } from "@heroicons/react/24/outline";
-import { useCart } from "../contexts/CartContext";
-
-const API_BASE = "http://127.0.0.1:8000/api";
+import { useAuth } from "../contexts/AuthContext";
+import { API_BASE } from "../utils/api";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -13,6 +12,7 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [loadingCart, setLoadingCart] = useState(false);
+  const { api, token } = useAuth();
 
   useEffect(() => {
     fetchProduct();
@@ -30,8 +30,8 @@ const ProductDetail = () => {
     }
   };
 
-  const addToCart = async () => {
-    if (!localStorage.getItem("token")) {
+  const handleAddToCart = async () => {
+    if (!token) {
       alert("Please login to add to cart");
       navigate("/login");
       return;
@@ -39,9 +39,13 @@ const ProductDetail = () => {
 
     setLoadingCart(true);
     try {
-      await addToCart(product, quantity);
+      await api.post("/cart/items/", {
+        product: product.id,
+        quantity,
+      });
+      window.dispatchEvent(new Event("freshharvest-cart-change"));
       alert("Added to cart! 🛒");
-    } catch (error) {
+    } catch {
       alert("Error adding to cart");
     } finally {
       setLoadingCart(false);
@@ -63,9 +67,6 @@ const ProductDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center pt-24 bg-gray-50">
         <div className="text-center">
-          <div className="text-6xl mb-6">
-            {product.name.charAt(0).toLowerCase()}
-          </div>
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Product not found
           </h2>
@@ -230,7 +231,7 @@ const ProductDetail = () => {
 
               {/* Add to Cart Button */}
               <button
-                onClick={addToCart}
+                onClick={handleAddToCart}
                 disabled={!product.is_available || loadingCart}
                 className={`w-full py-5 px-8 rounded-3xl font-bold text-xl shadow-2xl transition-all duration-300 flex items-center justify-center ${
                   product.is_available

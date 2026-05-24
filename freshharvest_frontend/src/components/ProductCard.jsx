@@ -19,6 +19,7 @@ const ProductCard = ({ product }) => {
         product: product.id,
         quantity: 1,
       });
+      window.dispatchEvent(new Event("freshharvest-cart-change"));
       alert("Added to cart!");
     } catch (error) {
       console.error("Add failed:", error.response?.data);

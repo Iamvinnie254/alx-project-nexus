@@ -14,7 +14,7 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const { api, token, user, isAuthenticated } = useAuth();
+  const { api, token, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const fetchOrders = useCallback(async () => {
@@ -151,7 +151,10 @@ const Orders = () => {
                   <div className="flex flex-col sm:flex-row gap-6 items-end sm:items-center">
                     <div className="text-right">
                       <p className="text-3xl font-black text-emerald-600">
-                        KSh {parseFloat(order.total || 0).toLocaleString()}
+                        KSh{" "}
+                        {parseFloat(
+                          order.total || order.total_amount || 0,
+                        ).toLocaleString()}
                       </p>
                       <p className="text-gray-600">
                         {order.total_items || 0} items
@@ -198,7 +201,11 @@ const Orders = () => {
                     <div className="text-right">
                       <p className="text-4xl font-black text-emerald-600 mb-1">
                         KSh{" "}
-                        {parseFloat(selectedOrder.total || 0).toLocaleString()}
+                        {parseFloat(
+                          selectedOrder.total ||
+                            selectedOrder.total_amount ||
+                            0,
+                        ).toLocaleString()}
                       </p>
                       <p className="text-gray-600">
                         {selectedOrder.total_items || 0} items

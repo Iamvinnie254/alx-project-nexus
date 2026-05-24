@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ProductCard from "../components/ProductCard";
 import { ChevronDownIcon, FunnelIcon } from "@heroicons/react/24/outline";
-
-const API_BASE = "http://127.0.0.1:8000/api";
+import { API_BASE } from "../utils/api";
 
 const Products = () => {
   const [products, setProducts] = useState([]);

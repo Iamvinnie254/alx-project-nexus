@@ -1,13 +1,35 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useCart } from "../contexts/CartContext";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
-  const { cartItems, cartCount } = useCart();
+  const { api, token, user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const cartItemCount = cartCount || cartItems?.length || 0;
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  const fetchCartCount = useCallback(async () => {
+    if (!token) {
+      setCartItemCount(0);
+      return;
+    }
+    try {
+      const { data } = await api.get("/cart/items/");
+      const items = data.results || data || [];
+      setCartItemCount(items.reduce((sum, item) => sum + item.quantity, 0));
+    } catch {
+      setCartItemCount(0);
+    }
+  }, [api, token]);
+
+  useEffect(() => {
+    queueMicrotask(fetchCartCount);
+    window.addEventListener("focus", fetchCartCount);
+    window.addEventListener("freshharvest-cart-change", fetchCartCount);
+    return () => {
+      window.removeEventListener("focus", fetchCartCount);
+      window.removeEventListener("freshharvest-cart-change", fetchCartCount);
+    };
+  }, [fetchCartCount]);
 
   return (
     <>
@@ -61,6 +83,15 @@ const Navbar = () => {
               >
                 My Orders
               </Link>
+
+              {user?.user_type === "farmer" && (
+                <Link
+                  to="/farmer"
+                  className="text-lg font-medium text-gray-700 hover:text-emerald-600 px-4 py-2 rounded-xl hover:bg-emerald-50/80 transition-all"
+                >
+                  Farmer Dashboard
+                </Link>
+              )}
 
               {/* AUTH SECTION */}
               <div className="flex items-center space-x-4 ml-4">
@@ -183,6 +214,15 @@ const Navbar = () => {
             >
               Orders
             </Link>
+            {user?.user_type === "farmer" && (
+              <Link
+                to="/farmer"
+                className="block py-4 px-6 text-xl font-bold text-gray-800 hover:text-emerald-600 hover:bg-linear-to-r hover:from-emerald-50 hover:to-green-50 rounded-2xl transition-all shadow-sm hover:shadow-md border hover:border-emerald-200"
+                onClick={() => setIsOpen(false)}
+              >
+                Farmer Dashboard
+              </Link>
+            )}
 
             {/* AUTH SECTION MOBILE*/}
             <div className="pt-4 border-t border-gray-200">

@@ -1,10 +1,8 @@
 from rest_framework import serializers
 from decimal import Decimal
 from django.db import transaction
-from django.core.exceptions import ValidationError
 from .models import Order, OrderItem, CartItem
 from products.models import Product
-from products.serializers import ProductSerializer
 
 class CheckoutCartItemSerializer(serializers.Serializer):
     product_id = serializers.IntegerField()
@@ -26,7 +24,7 @@ class CheckoutSerializer(serializers.Serializer):
             ).select_for_update(nowait=True)
             
             if len(products) != len(product_ids):
-                raise ValidationError("Product not available")
+                raise serializers.ValidationError("Product not available")
             
             product_dict = {p.id: p for p in products}
             total_amount = Decimal('0.00')
@@ -35,7 +33,7 @@ class CheckoutSerializer(serializers.Serializer):
             for item in cart_items_data:
                 product = product_dict[item['product_id']]
                 if item['quantity'] > product.stock_quantity:
-                    raise ValidationError(f"Insufficient stock for {product.name}")
+                    raise serializers.ValidationError(f"Insufficient stock for {product.name}")
                 
                 subtotal = product.price * item['quantity']
                 total_amount += subtotal
@@ -63,6 +61,7 @@ class CheckoutSerializer(serializers.Serializer):
             # Update availability
             depleted = [p for p in products if p.stock_quantity == 0]
             Product.objects.filter(id__in=[p.id for p in depleted]).update(is_available=False)
+            CartItem.objects.filter(user=user, product_id__in=product_ids).delete()
         
         return order
 
@@ -100,19 +99,63 @@ class CartItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     order_items = serializers.SerializerMethodField()
     total_items = serializers.SerializerMethodField()
+    total = serializers.DecimalField(source='total_amount', max_digits=10, decimal_places=2, read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    order_number = serializers.SerializerMethodField()
     
     class Meta:
         model = Order
-        fields = ['id', 'total_amount', 'status', 'delivery_address', 'order_notes', 'created_at', 'order_items', 'total_items']
+        fields = [
+            'id', 'order_number', 'total_amount', 'total', 'status',
+            'status_display', 'delivery_address', 'order_notes',
+            'created_at', 'order_items', 'total_items'
+        ]
+
+    def get_order_number(self, obj):
+        return f"FH-{obj.id:05d}"
     
     def get_order_items(self, obj):
         items = OrderItem.objects.filter(order=obj).select_related('product')
         return [{
             'product_name': item.product.name,
             'quantity': item.quantity,
+            'price': item.price_at_purchase,
             'price_at_purchase': item.price_at_purchase,
             'subtotal': item.price_at_purchase * item.quantity
         } for item in items]
     
     def get_total_items(self, obj):
         return sum(item.quantity for item in obj.order_items.all())
+
+
+class FarmerOrderSerializer(serializers.ModelSerializer):
+    buyer_name = serializers.CharField(source='user.username', read_only=True)
+    farmer_items = serializers.SerializerMethodField()
+    farmer_total = serializers.SerializerMethodField()
+    order_number = serializers.SerializerMethodField()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = Order
+        fields = [
+            'id', 'order_number', 'buyer_name', 'status', 'status_display',
+            'delivery_address', 'created_at', 'farmer_items', 'farmer_total'
+        ]
+
+    def get_order_number(self, obj):
+        return f"FH-{obj.id:05d}"
+
+    def _items_for_farmer(self, obj):
+        farmer = self.context['request'].user
+        return obj.order_items.filter(product__farmer=farmer).select_related('product')
+
+    def get_farmer_items(self, obj):
+        return [{
+            'product_name': item.product.name,
+            'quantity': item.quantity,
+            'price': item.price_at_purchase,
+            'subtotal': item.subtotal,
+        } for item in self._items_for_farmer(obj)]
+
+    def get_farmer_total(self, obj):
+        return sum(item.subtotal for item in self._items_for_farmer(obj))

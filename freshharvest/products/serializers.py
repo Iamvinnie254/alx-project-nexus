@@ -30,7 +30,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'harvest_date', 'is_available', 'image', 'weight_per_unit',
             'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'category_name', 'farmer_name']
+        read_only_fields = [
+            'id', 'farmer', 'created_at', 'updated_at',
+            'category_name', 'farmer_name', 'is_available'
+        ]
     
     def validate_stock_quantity(self, value):
         if value < 0:

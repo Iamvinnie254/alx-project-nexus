@@ -1,14 +1,14 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, {
   createContext,
   useContext,
   useState,
   useEffect,
   useRef,
-  useCallback,
 } from "react";
 import axios from "axios";
+import { API_BASE } from "../utils/api";
 
-const API_BASE = "http://127.0.0.1:8000/api";
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const { data } = await api.get("/users/me/");
           setUser(data);
-        } catch (error) {
+        } catch {
           localStorage.removeItem("token");
           setToken(null);
           delete api.defaults.headers.common["Authorization"];

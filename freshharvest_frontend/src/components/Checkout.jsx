@@ -41,7 +41,7 @@ const Checkout = () => {
     setMessage("");
 
     try {
-      const response = await api.post("/checkout/", {
+      await api.post("/checkout/", {
         delivery_address: deliveryAddress,
         order_notes: orderNotes || "",
         cart_items: cartItems.map((item) => ({
@@ -53,6 +53,7 @@ const Checkout = () => {
       setMessage(`✅ Order placed successfully!`);
 
       setCartItems([]);
+      window.dispatchEvent(new Event("freshharvest-cart-change"));
       setTimeout(() => navigate("/orders"), 1500);
     } catch (error) {
       console.error("Checkout error:", error.response?.data);

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 const CartContext = createContext();
@@ -5,6 +6,7 @@ const CartContext = createContext();
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "ADD_TO_CART":
+    {
       const existingItem = state.items.find(
         (item) => item.product.id === action.payload.product.id,
       );
@@ -22,6 +24,7 @@ const cartReducer = (state, action) => {
         ...state,
         items: [...state.items, action.payload],
       };
+    }
 
     case "UPDATE_QUANTITY":
       return {
